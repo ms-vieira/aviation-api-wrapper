@@ -1,0 +1,53 @@
+[
+    {
+        "icaoId": "KJFK",
+        "iataId": "JFK",
+        "faaId": "JFK",
+        "name": "NEW YORK/JOHN F KENNEDY INTL ",
+        "state": "NY",
+        "country": "US",
+        "source": "FAA",
+        "type": "ARP",
+        "lat": 40.6399,
+        "lon": -73.7787,
+        "elev": 4,
+        "magdec": "13W",
+        "owner": "P",
+        "rwyNum": "4",
+        "rwyLength": "L",
+        "rwyType": "C",
+        "services": "S",
+        "tower": "T",
+        "beacon": "B",
+        "operations": "0",
+        "passengers": "55280",
+        "freqs": "D-ATIS,115.4;D-ATIS,117.7;LCL/P,119.1;LCL/P,123.9;D-ATIS,128.725",
+        "priority": "0",
+        "runways": [
+            {
+                "id": "04L/22R",
+                "dimension": "12079x200",
+                "surface": "C",
+                "alignment": 31
+            },
+            {
+                "id": "04R/22L",
+                "dimension": "8400x200",
+                "surface": "A",
+                "alignment": 31
+            },
+            {
+                "id": "13L/31R",
+                "dimension": "10000x200",
+                "surface": "C",
+                "alignment": 121
+            },
+            {
+                "id": "13R/31L",
+                "dimension": "14511x200",
+                "surface": "C",
+                "alignment": 121
+            }
+        ]
+    }
+]

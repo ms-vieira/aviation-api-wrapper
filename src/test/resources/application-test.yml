@@ -1,0 +1,40 @@
+
+aviation:
+  provider:
+    aviationweather:
+      connect-timeout: 300ms
+      read-timeout: 500ms
+      user-agent: aviation-api-wrapper-test/1.0
+  cache:
+    maximum-size: 100
+    ttl: 1m
+
+resilience4j:
+  retry:
+    instances:
+      aviationWeather:
+        wait-duration: 10ms
+  circuitbreaker:
+    instances:
+      aviationWeather:
+        wait-duration-in-open-state: 1s
+  bulkhead:
+    instances:
+      aviationWeather:
+        max-concurrent-calls: 2
+        max-wait-duration: 0
+  ratelimiter:
+    instances:
+      aviationWeather:
+        limit-for-period: 1000
+        limit-refresh-period: 1m
+        timeout-duration: 0
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.msvieira.aviation: DEBUG

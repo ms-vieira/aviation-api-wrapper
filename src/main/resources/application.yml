@@ -1,0 +1,106 @@
+spring:
+  application:
+    name: aviation-api-wrapper
+  mvc:
+    problemdetails:
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+  shutdown: graceful
+
+aviation:
+  provider:
+    aviationweather:
+      base-url: https://aviationweather.gov
+      connect-timeout: 1s
+      read-timeout: 2s
+      user-agent: aviation-api-wrapper/1.0 (+https://github.com/ms-vieira/aviation-api-wrapper)
+  cache:
+    maximum-size: 10000
+    ttl: 10m
+
+resilience4j:
+  retry:
+    instances:
+      aviationWeather:
+        max-attempts: 3
+        wait-duration: 200ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - com.msvieira.aviation.domain.exception.UpstreamTimeoutException
+          - com.msvieira.aviation.domain.exception.UpstreamUnavailableException
+        ignore-exceptions:
+          - com.msvieira.aviation.domain.exception.AirportNotFoundException
+          - com.msvieira.aviation.domain.exception.UpstreamRateLimitedException
+          - com.msvieira.aviation.domain.exception.UpstreamBadResponseException
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException
+          - io.github.resilience4j.bulkhead.BulkheadFullException
+          - io.github.resilience4j.ratelimiter.RequestNotPermitted
+  circuitbreaker:
+    instances:
+      aviationWeather:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        record-exceptions:
+          - com.msvieira.aviation.domain.exception.UpstreamTimeoutException
+          - com.msvieira.aviation.domain.exception.UpstreamUnavailableException
+          - com.msvieira.aviation.domain.exception.UpstreamRateLimitedException
+          - com.msvieira.aviation.domain.exception.UpstreamBadResponseException
+        ignore-exceptions:
+          - com.msvieira.aviation.domain.exception.AirportNotFoundException
+          - io.github.resilience4j.bulkhead.BulkheadFullException
+          - io.github.resilience4j.ratelimiter.RequestNotPermitted
+        register-health-indicator: true
+        allow-health-indicator-to-fail: false
+  bulkhead:
+    instances:
+      aviationWeather:
+        max-concurrent-calls: 32
+        max-wait-duration: 500ms
+  ratelimiter:
+    instances:
+      aviationWeather:
+        limit-for-period: 10
+        limit-refresh-period: 8s
+        timeout-duration: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: Airport lookup by ICAO code, backed by aviationweather.gov
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
